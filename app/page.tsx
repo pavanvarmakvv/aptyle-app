@@ -1,5 +1,6 @@
 "use client";
-export const dynamic = "force-dynamic"; // Add this line
+export const dynamic = "force-dynamic";
+
 import { supabase } from "@/lib/supabase";
 import { useState, useEffect, useMemo } from "react"; 
 import { usePersonaStore } from "@/store/usePersonaStore";
@@ -12,6 +13,17 @@ import {
   User, 
   ChevronRight 
 } from "lucide-react";
+
+// --- MAPPING FOR CLEANER UI LABELS ---
+const displayNames: Record<string, string> = {
+  athletic_v_shape: "Athletic V-Shape",
+  lean_sculpted: "Lean & Sculpted",
+  balanced_standard: "Balanced Classic",
+  robust_classic: "Robust Heritage",
+  CATEGORY_1: "Lean & Sculpted",
+  CATEGORY_2: "Athletic V-Shape",
+  CATEGORY_3: "Balanced Classic"
+};
 
 export default function AptyleHome() {
   const { user, setUserInfo, metrics, setMetrics, category, setCategory } = usePersonaStore();
@@ -36,8 +48,6 @@ export default function AptyleHome() {
   }, []);
 
   // --- STEP 2: SMART FILTERING LOGIC ---
-  // This cleans strings like "Athletic/V-Shape" and "athletic_v_shape" 
-  // into "athleticvshape" so they match perfectly.
   const filteredOutfits = useMemo(() => {
     if (!category) return cloudOutfits;
 
@@ -50,12 +60,12 @@ export default function AptyleHome() {
       normalize(outfit.category) === userCategory
     );
 
-    // If matches are found, return only those. 
-    // If absolutely zero matches found, return all as a safety fallback.
+    // Safety fallback: if no perfect match, show all so the screen isn't blank
     return matched.length > 0 ? matched : cloudOutfits;
   }, [category, cloudOutfits]);
 
   const handleComplete = async () => {
+    // This now gets the technical ID like 'balanced_standard'
     const res = calculateCategory(metrics.height, metrics.weight, metrics.shoulderType, metrics.chestType);
     setCategory(res);
 
@@ -252,7 +262,11 @@ export default function AptyleHome() {
                   <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#f17a28]">Curated for you</span>
                 </div>
                 <h2 className="text-5xl font-black uppercase tracking-tighter">Recommended Looks</h2>
-                <p className="text-gray-400 mt-2 font-medium">Hello {user.name.split(' ')[0]}, here is your {category?.replace('_', ' ')} edit.</p>
+                <p className="text-gray-400 mt-2 font-medium">
+  Hello {user.name.split(' ')[0]}, here is your <span className="text-black font-bold">
+    {displayNames[category as keyof typeof displayNames] || category || "Style"}
+  </span> edit.
+</p>
               </div>
               <button 
                 onClick={() => setStep(1)} 
@@ -274,7 +288,7 @@ export default function AptyleHome() {
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
                     <div className="absolute bottom-0 left-0 bg-white p-4 group-hover:translate-x-2 transition-transform shadow-sm">
                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Persona Match</span>
-                       <p className="text-[11px] font-bold text-[#f17a28] uppercase">{outfit.category}</p>
+                       <p className="text-[11px] font-bold text-[#f17a28] uppercase">{displayNames[outfit.category] || outfit.category}</p>
                     </div>
                   </div>
                   
@@ -300,7 +314,6 @@ export default function AptyleHome() {
         )}
       </main>
 
-      {/* --- FOOTER --- */}
       <footer className="mt-40 border-t border-gray-50 px-12 py-20 text-center">
         <h2 className="text-xl font-bold text-[#f17a28] mb-4">Aptyle</h2>
         <p className="text-[10px] font-bold text-gray-300 uppercase tracking-[0.5em] mb-12">Intelligent Style © 2025</p>
