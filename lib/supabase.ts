@@ -1,7 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
 
-// We provide default empty strings to prevent the "URL is required" error during build time
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder-url.supabase.co'
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+// This will help us see if the variables are actually loading in the browser
+if (typeof window !== 'undefined') {
+  console.log("Supabase Client Initializing...");
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("CRITICAL: Supabase variables are missing in the browser!");
+  }
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
