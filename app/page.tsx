@@ -1,7 +1,7 @@
 "use client";
 export const dynamic = "force-dynamic";
 
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase"; // <--- Double check this path
 import { useState, useEffect, useMemo } from "react"; 
 import { usePersonaStore } from "@/store/usePersonaStore";
 import { calculateCategory } from "@/lib/matchingEngine";
@@ -263,10 +263,10 @@ export default function AptyleHome() {
                 </div>
                 <h2 className="text-5xl font-black uppercase tracking-tighter">Recommended Looks</h2>
                 <p className="text-gray-400 mt-2 font-medium">
-  Hello {user.name.split(' ')[0]}, here is your <span className="text-black font-bold">
-    {displayNames[category as keyof typeof displayNames] || category || "Style"}
-  </span> edit.
-</p>
+                  Hello {user.name.split(' ')[0]}, here is your <span className="text-black font-bold">
+                    {displayNames[category as keyof typeof displayNames] || category || "Style"}
+                  </span> edit.
+                </p>
               </div>
               <button 
                 onClick={() => setStep(1)} 

@@ -1,14 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+// We use fallbacks to prevent "Exit Code 1" during build time
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://mxiwyohzfvmmkdltpkfw.supabase.co'
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
-// This will help us see if the variables are actually loading in the browser
-if (typeof window !== 'undefined') {
-  console.log("Supabase Client Initializing...");
-  if (!supabaseUrl || !supabaseAnonKey) {
-    console.error("CRITICAL: Supabase variables are missing in the browser!");
-  }
+if (!supabaseAnonKey && typeof window !== 'undefined') {
+  console.warn("Supabase Anon Key is missing! Check Vercel Environment Variables.");
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
